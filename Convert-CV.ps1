@@ -67,6 +67,7 @@ try {
         '--headless=old',
         '--disable-gpu',
         '--no-pdf-header-footer',
+        '--run-all-compositor-stages-before-draw',
         "--print-to-pdf=$pdfPath",
         "--user-data-dir=$tempProfile"
         $fileUri
