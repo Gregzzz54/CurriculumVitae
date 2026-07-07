@@ -77,28 +77,36 @@ try {
         throw "Word failed to open: $HtmlPath"
     }
 
-    # Apply narrow margins (0.5 inch = 720 twips)
-    foreach ($section in $doc.Sections) {
-        $pm = $section.PageSetup
-        $pm.TopMargin    = 720
-        $pm.BottomMargin = 720
-        $pm.LeftMargin   = 720
-        $pm.RightMargin  = 720
+    # Set page size to A4 and apply narrow margins (0.5 inch = 720 twips)
+    try {
+        foreach ($section in $doc.Sections) {
+            $pm = $section.PageSetup
+            $pm.PaperSize    = 9      # wdPaperA4
+            $pm.Orientation  = 0      # wdOrientPortrait
+            $pm.TopMargin    = 720
+            $pm.BottomMargin = 720
+            $pm.LeftMargin   = 720
+            $pm.RightMargin  = 720
+        }
+    }
+    catch {
+        Write-Warning 'Could not apply custom margins - continuing without them.'
     }
 
-    # Save as DOCX (16 = wdFormatDocumentDefault)
+    # Save as DOCX (16 = wdFormatDocumentDefault), suppress compatibility dialog
+    $word.DisplayAlerts = 0   # wdAlertsNone
     $doc.SaveAs2([ref]$docxPath, [ref]16)
-    Write-Host "Saved DOCX."
+    Write-Host 'Saved DOCX.'
 
     # Export as PDF (17 = wdExportFormatPDF)
     $doc.ExportAsFixedFormat($pdfPath, 17)
-    Write-Host "Saved PDF."
+    Write-Host 'Saved PDF.'
 
     $doc.Close($false)
-    Write-Host "`nDone." -ForegroundColor Green
+    Write-Host 'Done.' -ForegroundColor Green
 }
 catch {
-    Write-Error "Conversion failed: $_"
+    Write-Error ('Conversion failed: ' + $_.Exception.Message)
     exit 1
 }
 finally {
