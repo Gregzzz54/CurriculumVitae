@@ -1,117 +1,83 @@
-<#
+﻿<#
 .SYNOPSIS
-    Converts index.html to .docx and .pdf using Microsoft Word.
+    Generates a PDF of the CV using a headless browser.
 
 .DESCRIPTION
-    Requires Microsoft Word to be installed.
-    Reads index.html, saves as DOCX then exports to PDF.
+    Uses Microsoft Edge (or Chrome) in headless mode to print index.html to a
+    pixel-perfect PDF. Requires Edge or Chrome to be installed.
 
 .PARAMETER HtmlPath
-    Path to the source HTML file. Defaults to index.html in the script directory.
+    Path to the source HTML file. Defaults to index.html in the script folder.
 
 .PARAMETER OutputBaseName
-    Base filename (no extension) for output files. Defaults to Nathan-Gregory-CV.
+    Base filename for the output PDF.
 
 .PARAMETER OutputDirectory
-    Directory to save output files. Defaults to the script directory.
+    Directory to write the PDF. Defaults to the script folder.
 
 .EXAMPLE
     .\Convert-CV.ps1
-
-.EXAMPLE
-    .\Convert-CV.ps1 -HtmlPath index.html -OutputBaseName "Nathan-Gregory-CV" -OutputDirectory .
 #>
-
 [CmdletBinding()]
 param(
-    [string]$HtmlPath       = $null,
+    [string]$HtmlPath       = 'index.html',
     [string]$OutputBaseName = 'Nathan-Gregory-CV',
-    [string]$OutputDirectory = $null
+    [string]$OutputDirectory = '.'
 )
 
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$scriptDir = $PSScriptRoot
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 
-if (-not $HtmlPath) {
-    $HtmlPath = Join-Path $scriptDir 'index.html'
+function Resolve-CvPath {
+    param([string]$Path, [string]$Base)
+    if ([System.IO.Path]::IsPathRooted($Path)) { return [System.IO.Path]::GetFullPath($Path) }
+    return [System.IO.Path]::GetFullPath((Join-Path $Base $Path))
 }
 
-if (-not $OutputDirectory) {
-    $OutputDirectory = $scriptDir
-}
+$resolvedHtml   = Resolve-CvPath -Path $HtmlPath       -Base $scriptDir
+$resolvedOutDir = Resolve-CvPath -Path $OutputDirectory -Base $scriptDir
 
-$HtmlPath       = [System.IO.Path]::GetFullPath($HtmlPath)
-$OutputDirectory = [System.IO.Path]::GetFullPath($OutputDirectory)
+if (-not (Test-Path $resolvedHtml))   { throw "HTML not found: $resolvedHtml" }
+if (-not (Test-Path $resolvedOutDir)) { New-Item -ItemType Directory -Path $resolvedOutDir | Out-Null }
 
-if (-not (Test-Path $HtmlPath)) {
-    Write-Error "Source HTML not found: $HtmlPath"
-    exit 1
-}
+$pdfPath = Join-Path $resolvedOutDir ($OutputBaseName + '.pdf')
+$fileUri = 'file:///' + $resolvedHtml.Replace('\', '/')
 
-if (-not (Test-Path $OutputDirectory)) {
-    New-Item -ItemType Directory -Path $OutputDirectory | Out-Null
-}
+$browsers = @(
+    'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
+    'C:\Program Files\Microsoft\Edge\Application\msedge.exe',
+    'C:\Program Files\Google\Chrome\Application\chrome.exe',
+    'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
+)
+$browser = $browsers | Where-Object { Test-Path $_ } | Select-Object -First 1
 
-$docxPath = Join-Path $OutputDirectory "$OutputBaseName.docx"
-$pdfPath  = Join-Path $OutputDirectory "$OutputBaseName.pdf"
+if (-not $browser) { throw 'No supported browser found. Install Microsoft Edge or Google Chrome.' }
 
-Write-Host "Source : $HtmlPath"
-Write-Host "DOCX   : $docxPath"
-Write-Host "PDF    : $pdfPath"
+Write-Host "Browser : $(Split-Path $browser -Leaf)"
+Write-Host "Source  : $resolvedHtml"
+Write-Host "PDF     : $pdfPath"
 
-$word = $null
+$tempProfile = Join-Path $env:TEMP ('cv-export-' + [guid]::NewGuid().ToString('N').Substring(0,8))
+New-Item -ItemType Directory -Path $tempProfile | Out-Null
+
 try {
-    $word = New-Object -ComObject Word.Application
-    $word.Visible = $false
-
-    # Open HTML as Word document
-    $doc = $word.Documents.Open(
-        $HtmlPath,
-        $false,  # ConfirmConversions
-        $false,  # ReadOnly
-        $false   # AddToRecentFiles
+    $args = @(
+        '--headless=old',
+        '--disable-gpu',
+        '--no-pdf-header-footer',
+        "--print-to-pdf=$pdfPath",
+        "--user-data-dir=$tempProfile"
+        $fileUri
     )
-
-    if ($null -eq $doc) {
-        throw "Word failed to open: $HtmlPath"
+    $proc = Start-Process -FilePath $browser -ArgumentList $args -Wait -PassThru -NoNewWindow
+    if (Test-Path $pdfPath) {
+        Write-Host 'Saved PDF.' -ForegroundColor Green
+    } else {
+        Write-Warning 'PDF was not created. Exit code: ' + $proc.ExitCode
     }
-
-    # Set page size to A4 and apply narrow margins (0.5 inch = 720 twips)
-    try {
-        foreach ($section in $doc.Sections) {
-            $pm = $section.PageSetup
-            $pm.PaperSize    = 9      # wdPaperA4
-            $pm.Orientation  = 0      # wdOrientPortrait
-            $pm.TopMargin    = 720
-            $pm.BottomMargin = 720
-            $pm.LeftMargin   = 720
-            $pm.RightMargin  = 720
-        }
-    }
-    catch {
-        Write-Warning 'Could not apply custom margins - continuing without them.'
-    }
-
-    # Save as DOCX (16 = wdFormatDocumentDefault), suppress compatibility dialog
-    $word.DisplayAlerts = 0   # wdAlertsNone
-    $doc.SaveAs2([ref]$docxPath, [ref]16)
-    Write-Host 'Saved DOCX.'
-
-    # Export as PDF (17 = wdExportFormatPDF)
-    $doc.ExportAsFixedFormat($pdfPath, 17)
-    Write-Host 'Saved PDF.'
-
-    $doc.Close($false)
-    Write-Host 'Done.' -ForegroundColor Green
-}
-catch {
-    Write-Error ('Conversion failed: ' + $_.Exception.Message)
-    exit 1
 }
 finally {
-    if ($null -ne $word) {
-        $word.Quit()
-        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($word) | Out-Null
-    }
+    Remove-Item $tempProfile -Recurse -Force -ErrorAction SilentlyContinue
 }
