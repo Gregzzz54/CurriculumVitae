@@ -57,14 +57,17 @@
             .cv-contact { align-items: flex-start; }
         }
         @media print {
-            body { background: #fff; }
-            .cv-wrap { margin: 0; border-radius: 0; box-shadow: none; max-width: 100%; }
-            .cv-header { background-color: #1e293b !important; border-top: 4px solid #0d9488 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { margin: 1.5cm; }
+            body { background: #fff; margin: 0; padding: 0; }
+            .cv-wrap { margin: 0; border-radius: 0; box-shadow: none; max-width: 100%; width: 100%; }
+            .cv-header { background-color: #1e293b !important; border-top: 4px solid #0d9488 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 1.25rem 1.5rem 1rem; }
+            .cv-body { padding: 1.25rem 1.5rem; }
             .cv-name { color: #f8fafc !important; }
             .cv-title { color: #0d9488 !important; }
             .cv-contact, .cv-contact a { color: #94a3b8 !important; }
             .cv-skill { background-color: #ccfbf1 !important; color: #0f766e !important; border-color: #99f6e4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .cv-section-title { border-bottom-color: #0d9488 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .cv-section { margin-bottom: 1.25rem; }
             .cv-entry { page-break-inside: avoid; }
             .cv-download { display: none !important; }
         }
