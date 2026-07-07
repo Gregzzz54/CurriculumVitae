@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="DevOps Engineer CV — Nathan Gregory. Hybrid infrastructure, automation, and enterprise networking.">
+    <title>Nathan Gregory | DevOps Engineer</title>
+    <style>
+        :root {
+            --teal:        #0d9488;
+            --teal-light:  #ccfbf1;
+            --teal-dark:   #0f766e;
+            --teal-border: #99f6e4;
+            --bg:          #f1f5f9;
+            --surface:     #ffffff;
+            --header-bg:   #1e293b;
+            --header-text: #f8fafc;
+            --header-muted:#94a3b8;
+            --text:        #1e293b;
+            --muted:       #64748b;
+            --border:      #e2e8f0;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a { color: var(--teal); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* ── Wrapper ── */
+        .cv-wrap {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        /* ── Header ── */
+        .cv-header {
+            background: var(--header-bg);
+            border-top: 4px solid var(--teal);
+            padding: 2rem 2.5rem 1.5rem;
+        }
+
+        .cv-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+        }
+
+        .cv-name {
+            font-size: clamp(1.9rem, 4vw, 2.75rem);
+            font-weight: 700;
+            color: var(--header-text);
+            letter-spacing: -0.025em;
+            line-height: 1.05;
+        }
+
+        .cv-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--teal);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 0.45rem;
+        }
+
+        .cv-contact {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--header-muted);
+            font-style: normal;
+        }
+
+        .cv-contact a { color: var(--header-muted); }
+        .cv-contact a:hover { color: var(--teal); text-decoration: none; }
+
+        .cv-downloads {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.1rem;
+        }
+
+        .cv-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.28rem 0.65rem;
+            border: 1px solid rgba(153,246,228,0.35);
+            border-radius: 5px;
+            background: rgba(13,148,136,0.15);
+            color: var(--teal-border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .cv-download:hover {
+            background: rgba(13,148,136,0.28);
+            text-decoration: none;
+        }
+
+        /* ── Body ── */
+        .cv-body {
+            padding: 2rem 2.5rem;
+        }
+
+        /* ── Sections ── */
+        .cv-section { margin-bottom: 1.85rem; }
+        .cv-section:last-child { margin-bottom: 0; }
+
+        .cv-section-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--muted);
+            padding-bottom: 0.45rem;
+            border-bottom: 2px solid var(--teal);
+            display: inline-block;
+            margin-bottom: 0.85rem;
+        }
+
+        /* ── Summary ── */
+        .cv-summary p {
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ── Skills ── */
+        .cv-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .cv-skill {
+            background: var(--teal-light);
+            color: var(--teal-dark);
+            border: 1px solid var(--teal-border);
+            border-radius: 4px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* ── Experience entries ── */
+        .cv-entry {
+            padding: 1rem 0 0.75rem 1.1rem;
+            border-left: 3px solid var(--border);
+            margin-top: 1.35rem;
+            transition: border-color 0.15s;
+        }
+
+        .cv-entry:first-of-type { margin-top: 0; }
+        .cv-entry:hover { border-left-color: var(--teal); }
+
+        .cv-entry h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .cv-entry-meta {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin: 0.2rem 0 0.65rem;
+        }
+
+        .cv-entry ul {
+            padding-left: 1.15rem;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .cv-entry li + li { margin-top: 0.3rem; }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .cv-wrap    { margin: 0; border-radius: 0; }
+            .cv-header  { padding: 1.4rem 1.25rem 1.1rem; }
+            .cv-body    { padding: 1.5rem 1.25rem; }
+            .cv-header-row { flex-direction: column; }
+            .cv-contact { align-items: flex-start; }
+        }
+
+        /* ── Print ── */
+        @media print {
+            body        { background: #fff; }
+            .cv-wrap    { margin: 0; border-radius: 0; box-shadow: none; max-width: 100%; }
+            .cv-header  { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .cv-skill   { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .cv-download { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cv-wrap">
+
+        <!-- ═══ HEADER ═══ -->
+        <header class="cv-header" aria-label="CV header">
+            <div class="cv-header-row">
+                <div>
+                    <h1 class="cv-name">Nathan Gregory</h1>
+                    <p class="cv-title">DevOps Engineer</p>
+                </div>
+                <address class="cv-contact" aria-label="Contact information">
+                    <span><a href="mailto:Nathangreg30@hotmail.com">Nathangreg30@hotmail.com</a></span>
+                    <span><a href="tel:+447401966728">+44 7401 966728</a></span>
+                    <span><a href="https://github.com/Gregzzz54" target="_blank" rel="noopener noreferrer">github.com/Gregzzz54</a></span>
+                    <span>Hunnington, England, United Kingdom</span>
+                </address>
+            </div>
+            <div class="cv-downloads" aria-label="Download CV">
+                <a class="cv-download" href="Nathan-Gregory-CV.pdf" download>&#8595; PDF</a>
+                <a class="cv-download" href="Nathan-Gregory-CV.docx" download>&#8595; DOCX</a>
+            </div>
+        </header>
+
+        <!-- ═══ BODY ═══ -->
+        <main class="cv-body">
+
+            <!-- Profile -->
+            <section class="cv-section" aria-label="Profile">
+                <h2 class="cv-section-title">Profile</h2>
+                <p class="cv-summary">DevOps Engineer with 7 years of hands-on experience across hybrid infrastructure, automation, and secure enterprise environments. Skilled in Ansible, Azure, AWS, Hyper-V, and Windows Server, backed by a strong networking foundation. Committed to reliable deployments, operational stability, and solving complex infrastructure challenges.</p>
+            </section>
+
+            <!-- Core Skills -->
+            <section class="cv-section" aria-label="Core Skills">
+                <h2 class="cv-section-title">Core Skills</h2>
+                <div class="cv-skills">
+                    <span class="cv-skill">Ansible</span>
+                    <span class="cv-skill">Azure / Azure Local</span>
+                    <span class="cv-skill">AWS</span>
+                    <span class="cv-skill">Hyper-V</span>
+                    <span class="cv-skill">Windows Server</span>
+                    <span class="cv-skill">GitHub Enterprise</span>
+                    <span class="cv-skill">PowerShell</span>
+                    <span class="cv-skill">Infrastructure as Code</span>
+                    <span class="cv-skill">CI/CD Pipelines</span>
+                    <span class="cv-skill">Enterprise Networking</span>
+                    <span class="cv-skill">Cisco / HPE</span>
+                    <span class="cv-skill">MPLS / SD-WAN</span>
+                    <span class="cv-skill">VPN Management</span>
+                    <span class="cv-skill">Linux / RHEL</span>
+                    <span class="cv-skill">Containers / Podman</span>
+                    <span class="cv-skill">Active Directory</span>
+                    <span class="cv-skill">ITIL</span>
+                    <span class="cv-skill">Monitoring &amp; Alerting</span>
+                </div>
+            </section>
+
+            <!-- Experience -->
+            <section class="cv-section" aria-label="Professional Experience">
+                <h2 class="cv-section-title">Experience</h2>
+
+                <article class="cv-entry">
+                    <h3>Microland Limited &mdash; DevOps Engineer</h3>
+                    <div class="cv-entry-meta">April 2024 &ndash; Present | Birmingham, United Kingdom</div>
+                    <ul>
+                        <li>Driving infrastructure modernisation using <strong>Ansible</strong> and <strong>GitHub Enterprise pipelines</strong> to automate deployments across the estate.</li>
+                        <li>Automated deployments across <strong>Azure Local</strong> and <strong>AWS</strong> hybrid infrastructure for critical national infrastructure at 75+ physical sites.</li>
+                        <li>Converting legacy manual update and deployment processes into one-click automated pipelines, reducing team workload and improving consistency and repeatability.</li>
+                        <li>Designed and delivered automated workflows for new service onboarding, eliminating repetitive manual tasks and freeing the team to focus on higher-value work.</li>
+                        <li>Developed and maintained <strong>PowerShell</strong> scripts for automation and configuration management across the estate.</li>
+                        <li>Applied <strong>IaC</strong> principles and DevOps best practices to reduce manual intervention and enforce strict security standards.</li>
+                        <li>Led the migration of 68+ <strong>site-to-site VPNs</strong>, maintaining network continuity and security throughout delivery.</li>
+                        <li>Led <strong>AWS cost optimisation</strong> on own initiative, improving cost-to-performance ratio and delivering savings of over <strong>£250,000 per year</strong> for the business.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-entry">
+                    <h3>Microland Limited &mdash; Senior Cloud &amp; Infrastructure Engineer</h3>
+                    <div class="cv-entry-meta">March 2022 &ndash; April 2024 | Birmingham, United Kingdom</div>
+                    <ul>
+                        <li>Managed <strong>Microsoft Hyper-V</strong> hybrid environments across multiple remote sites connected via <strong>MPLS</strong> to AWS.</li>
+                        <li>Provided full-stack operational support across <strong>Windows Server</strong>, cloud, WAN, embedded electronics, <strong>Cisco</strong> and <strong>HPE</strong> networking, and infrastructure services.</li>
+                        <li>Owned patch maintenance and security update processes for 68+ critical national infrastructure sites, managing the full update lifecycle.</li>
+                        <li>Led BAU team operations, managing day-to-day workloads, priorities, and team responsibilities across the function.</li>
+                        <li>Supported migration to <strong>SD-WAN</strong> while maintaining service continuity, security, and network performance.</li>
+                        <li>Delivered customer-focused service management, maintaining high service standards and acting as the primary escalation point for service quality.</li>
+                    </ul>
+                </article>
+
+                <article class="cv-entry">
+                    <h3>Microland Limited &mdash; SME Cloud &amp; Datacentre</h3>
+                    <div class="cv-entry-meta">September 2018 &ndash; March 2022 | Birmingham, United Kingdom</div>
+                    <ul>
+                        <li>Provided 1st and 2nd line technical support as part of a specialist service desk, resolving incidents including high-priority issues across critical national infrastructure.</li>
+                        <li>Delivered operational support across <strong>Hyper-V</strong>, <strong>Windows Server</strong>, cloud, WAN, <strong>Cisco</strong> and <strong>HPE</strong> networking, and embedded systems.</li>
+                        <li>Supported <strong>SD-WAN</strong> migration while maintaining service continuity and security across connected sites.</li>
+                        <li>Built strong <strong>ITIL</strong> foundations through structured incident, problem, and change management processes.</li>
+                        <li>Acted as technical escalation point for complex infrastructure and networking incidents across the team.</li>
+                    </ul>
+                </article>
+
+            </section>
+
+            <!-- Certifications -->
+            <section class="cv-section" aria-label="Certifications">
+                <h2 class="cv-section-title">Certifications</h2>
+
+                <article class="cv-entry">
+                    <h3>AWS Certified Cloud Practitioner</h3>
+                    <div class="cv-entry-meta">Amazon Web Services (AWS)</div>
+                </article>
+
+            </section>
+
+        </main>
+    </div>
+</body>
+
+</html>
